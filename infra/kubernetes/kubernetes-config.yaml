@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: express-backend
+  template:
+    metadata:
+      labels:
+        app: express-backend
+    spec:
+      containers:
+        - name: express-backend
+          image: docker.io/rudystarkweb/express-backend:latest
+          env:
+            - name: MONGODB_URI
+              value: "mongodb://mongodb-service:27017/cardb"
+          ports:
+            - containerPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: react-frontend
+  template:
+    metadata:
+      labels:
+        app: react-frontend
+    spec:
+      containers:
+        - name: react-frontend
+          image: docker.io/rudystarkweb/react-frontend:latest
+          env:
+            - name: REACT_APP_API_URL
+              value: "http://express-backend-service"
+          ports:
+            - containerPort: 80
